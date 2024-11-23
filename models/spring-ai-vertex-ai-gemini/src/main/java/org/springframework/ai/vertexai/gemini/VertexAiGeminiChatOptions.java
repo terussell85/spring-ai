@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.google.cloud.vertexai.api.SafetySetting;
 import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.ai.model.function.FunctionCallingOptions;
 import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatModel.ChatModel;
@@ -118,6 +119,9 @@ public class VertexAiGeminiChatOptions implements FunctionCallingOptions {
 	private boolean googleSearchRetrieval = false;
 
 	@JsonIgnore
+	private List<SafetySetting> safetySettings = new ArrayList<>();
+
+	@JsonIgnore
 	private Boolean proxyToolCalls;
 
 	@JsonIgnore
@@ -143,6 +147,7 @@ public class VertexAiGeminiChatOptions implements FunctionCallingOptions {
 		options.setFunctions(fromOptions.getFunctions());
 		options.setResponseMimeType(fromOptions.getResponseMimeType());
 		options.setGoogleSearchRetrieval(fromOptions.getGoogleSearchRetrieval());
+		options.setSafetySettings(fromOptions.getSafetySettings());
 		options.setProxyToolCalls(fromOptions.getProxyToolCalls());
 		options.setToolContext(fromOptions.getToolContext());
 		return options;
@@ -267,6 +272,14 @@ public class VertexAiGeminiChatOptions implements FunctionCallingOptions {
 
 	public void setGoogleSearchRetrieval(boolean googleSearchRetrieval) {
 		this.googleSearchRetrieval = googleSearchRetrieval;
+	}
+
+	public List<SafetySetting> getSafetySettings() {
+		return safetySettings;
+	}
+
+	public void setSafetySettings(List<SafetySetting> safetySettings) {
+		this.safetySettings = safetySettings;
 	}
 
 	@Override
@@ -405,6 +418,11 @@ public class VertexAiGeminiChatOptions implements FunctionCallingOptions {
 
 		public Builder withGoogleSearchRetrieval(boolean googleSearch) {
 			this.options.googleSearchRetrieval = googleSearch;
+			return this;
+		}
+
+		public Builder withSafetySettings(List<SafetySetting> safetySettings) {
+			this.options.safetySettings = safetySettings;
 			return this;
 		}
 

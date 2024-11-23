@@ -25,6 +25,8 @@ import java.util.stream.Stream;
 
 import com.google.cloud.vertexai.Transport;
 import com.google.cloud.vertexai.VertexAI;
+import com.google.cloud.vertexai.api.HarmCategory;
+import com.google.cloud.vertexai.api.SafetySetting;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -89,6 +91,18 @@ class VertexAiGeminiChatModelIT {
 		Prompt prompt = createPrompt(VertexAiGeminiChatOptions.builder().withGoogleSearchRetrieval(true).build());
 		ChatResponse response = this.chatModel.call(prompt);
 		assertThat(response.getResult().getOutput().getContent()).containsAnyOf("Blackbeard", "Bartholomew");
+	}
+
+	@Test
+	void testSafetySettings() {
+		List<SafetySetting> safetySettings = List.of(SafetySetting.newBuilder()
+			.setCategory(HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT)
+			.setThreshold(SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE)
+			.build());
+		Prompt prompt = new Prompt("What are common digital attack vectors?",
+				VertexAiGeminiChatOptions.builder().withSafetySettings(safetySettings).build());
+		ChatResponse response = this.chatModel.call(prompt);
+		assertThat(response.getResult().getMetadata().getFinishReason()).isEqualTo("SAFETY");
 	}
 
 	@NotNull

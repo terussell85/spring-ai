@@ -453,7 +453,8 @@ public class VertexAiGeminiChatModel extends AbstractToolCallSupport implements 
 		GenerationConfig generationConfig = this.generationConfig;
 
 		var generativeModelBuilder = new GenerativeModel.Builder().setModelName(this.defaultOptions.getModel())
-			.setVertexAi(this.vertexAI);
+			.setVertexAi(this.vertexAI)
+			.setSafetySettings(this.defaultOptions.getSafetySettings());
 
 		if (prompt.getOptions() != null) {
 			if (prompt.getOptions() instanceof FunctionCallingOptions functionCallingOptions) {
@@ -497,6 +498,10 @@ public class VertexAiGeminiChatModel extends AbstractToolCallSupport implements 
 		}
 		if (!CollectionUtils.isEmpty(tools)) {
 			generativeModelBuilder.setTools(tools);
+		}
+
+		if (prompt.getOptions() instanceof VertexAiGeminiChatOptions options && options.getSafetySettings() != null) {
+			generativeModelBuilder.setSafetySettings(options.getSafetySettings());
 		}
 
 		generativeModelBuilder.setGenerationConfig(generationConfig);
